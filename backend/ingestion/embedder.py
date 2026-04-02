@@ -9,7 +9,10 @@ import os
 from itertools import islice
 from tenacity import retry, wait_exponential, retry_if_exception_type
 load_dotenv()
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+# For Regular Use 
+# client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+client = OpenAI(api_key="ollama",
+                base_url="http://localhost:11434/v1")
 CHUNKS_PER_CALL = 100
 
 def embed_chunks(chunks: list[dict]) -> list[dict]:
@@ -28,7 +31,8 @@ def call_api(batch: list[dict]):
         texts = [chunk["text"] for chunk in batch]
         response = client.embeddings.create(
             input=texts,
-            model="text-embedding-3-large"
+            # For Regular Use: model="text-embedding-3-large"
+            model = "nomic-embed-text",
         )
         for chunk, embedding_obj in zip(batch, response.data):
              chunk["embedding"] = embedding_obj.embedding

@@ -3,7 +3,7 @@ Judd Ebert 3/15/2026
 Go from vectors to searchable index
 """
 
-FLOATS_PER_CHUNK=3072
+FLOATS_PER_CHUNK=768 # 3072 For Regular Use
 STORAGE_DIR = "backend/storage"
 
 import faiss

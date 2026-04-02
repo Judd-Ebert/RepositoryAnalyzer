@@ -125,7 +125,7 @@ def chunk_file(file_path: str) -> list[dict]:
     suffix = os.path.splitext(file_path)[1].lstrip(".")
     if suffix in supported_languages_map:
         file_language = (supported_languages_map[suffix])
-        text_splitter = RecursiveCharacterTextSplitter(language=Language[file_language], chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
+        text_splitter = RecursiveCharacterTextSplitter.from_language(language=Language[file_language], chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
     else:
         file_language = "Unknown"
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)

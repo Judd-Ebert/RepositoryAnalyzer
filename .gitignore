@@ -35,6 +35,7 @@ htmlcov/
 *.faiss
 *.index
 data/
+storage/
 
 # ── Cloned repositories (temporary ingestion workspace) ───────────────────────
 repos/
