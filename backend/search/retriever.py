@@ -8,7 +8,7 @@ from backend.config.config import client, FLOATS_PER_CHUNK, STORAGE_DIR
 def retrieve(repo_id: str, question: str, top_k: int = 8) -> list[dict]:
     index, metadata =load_data(repo_id)
     # Numpy converts the List to a 2D array of dimensions [1, FLOATS_PER_CHUNK] for the Faiss cosine comparison
-    embedded_question = np.array(call_api_question(question), dtype=np.float32).reshape(1, FLOATS_PER_CHUNK) 
+    embedded_question = np.array(call_api_question_chunks(question), dtype=np.float32).reshape(1, FLOATS_PER_CHUNK) 
     faiss.normalize_L2(embedded_question)
 
     distances, indices = index.search(embedded_question, top_k)
@@ -31,7 +31,7 @@ def load_data(repo_id: str):
     return index, metadata
 
 
-def call_api_question(question: str):
+def call_api_question_chunks(question: str):
     response = client.embeddings.create(
         input=question,
         # For Regular Use: model="text-embedding-3-large"
