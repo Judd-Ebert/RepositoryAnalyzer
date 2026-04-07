@@ -38,10 +38,3 @@ def call_api_question_chunks(question: str):
         model = "nomic-embed-text"
     )
     return response.data[0].embedding
-
-if __name__ == "__main__":
-    results = retrieve("86b1d73dd0bc", "What does this repo do?")
-    for r in results:
-        print(r["score"], r["file_path"], r["start_line"])
-        print(r["text"][:100])
-        print()

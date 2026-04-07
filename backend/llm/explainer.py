@@ -28,7 +28,7 @@ def explain(question: str, chunks: list[dict],) ->  dict:
 
 def call_api_question_explain(messages: list):
     response = client.chat.completions.create(
-        model="llama3.2", # Would be model="gpt-4o-mini" for production
+        model="qwen3.5:9b", # Would be model="gpt-4o-mini" for production
         messages=messages
     )
 
