@@ -21,7 +21,7 @@ def ingest(github_url: str):
     local_path = None
     try:
         click.echo("Cloning Repo")
-        local_path = clone_repo
+        local_path = clone_repo(github_url)
 
         click.echo("Chunking files")
         chunks = chunk_repository(local_path)
