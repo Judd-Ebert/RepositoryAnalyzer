@@ -29,7 +29,10 @@ def explain(question: str, chunks: list[dict],) ->  dict:
 def call_api_question_explain(messages: list):
     response = client.chat.completions.create(
         model="qwen3.5:9b", # Would be model="gpt-4o-mini" for production
-        messages=messages
+        messages=messages,
+        stream=True,
     )
 
-    return response.choices[0].message.content
+    for part in response:
+        content = part.choices[0].delta.content
+        

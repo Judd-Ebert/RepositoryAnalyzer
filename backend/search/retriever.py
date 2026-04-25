@@ -28,6 +28,8 @@ def load_data(repo_id: str):
 
     with open(f"{STORAGE_DIR}/{repo_id}.json") as f:
         metadata = json.load(f)
+    if not metadata:
+        raise ValueError(f"Metadata for repo '{repo_id}' not found.") 
     return index, metadata
 
 
