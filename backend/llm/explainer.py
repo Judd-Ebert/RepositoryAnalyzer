@@ -1,16 +1,14 @@
 from backend.config.config import client, SYSTEM_PROMPT
 
-from backend.search.retriever import retrieve
-
-def explain(question: str, chunks: list[dict],) ->  dict:
+def explain(question: str, chunks: list[dict],):
     context = ""
 
     for i, chunk in enumerate(chunks):
-        context += f"Chunk {i} file path: {chunk['file_path']}"
-        context += f"Chunk {i} start line: {chunk['start_line']}"
-        context += f"Chunk {i} text: {chunk['text']}"
-        context += f"Chunk {i} language: {chunk['language']}"
-        context += f"Chunk {i} relevance score: {chunk['score']}"
+        context += f"Chunk {i} file path: {chunk['file_path']} \n"
+        context += f"Chunk {i} start line: {chunk['start_line']} \n"
+        context += f"Chunk {i} text: {chunk['text']} \n"
+        context += f"Chunk {i} language: {chunk['language']} \n"
+        context += f"Chunk {i} relevance score: {chunk['score']} \n"
 
 
     messages = [
@@ -18,10 +16,7 @@ def explain(question: str, chunks: list[dict],) ->  dict:
         {"role": "user", "content": f"The question is: {question} and the context chunks are: {context}"},
     ]
 
-    text_response = call_api_question_explain(messages)
-
-
-    return {"answer": text_response,"sources": chunks}
+    yield from call_api_question_explain(messages)
 
 
 
@@ -35,4 +30,7 @@ def call_api_question_explain(messages: list):
 
     for part in response:
         content = part.choices[0].delta.content
+        if content:
+            yield content
+            
         
