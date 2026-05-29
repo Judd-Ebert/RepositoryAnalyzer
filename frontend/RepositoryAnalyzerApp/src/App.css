@@ -26,6 +26,10 @@
   text-align: center;
 }
 
+.toggle-container {
+  
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -84,6 +88,43 @@ button:hover {
 button:active {
   border-color: #684e8b;
   background-color: #e8e8e8;
+}
+
+/* ON/OFF toggle*/
+.toggle-button {
+  background-color: #a5a5a5;
+  border: 2px solid #2f2f2f;
+  border-radius: 99px;
+  width: 50px;
+  height: 28px;
+  transition: background-color 0.1s ease, border-color 0.2s ease;
+  cursor: pointer;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.748);
+  position: relative;
+}
+
+.toggle-button .thumb {
+  height: 18px;
+  width: 18px;
+  background-color: #f6f6f6;
+  border-radius: 99px;
+  transition: left .15s ease;
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.toggle-button.toggled {
+  background-color: #646cff;
+}
+
+.toggle-button.hover {
+  border-color: #9b53a5;
+}
+
+.toggle-button.toggled .thumb {
+  left: calc(50px - 20px - 6px);
 }
 
 input, button {

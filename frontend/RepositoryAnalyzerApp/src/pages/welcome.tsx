@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 export default function Welcome() {
     const [repoUrl, setRepoUrl] = useState("");
     const [error, setError] = useState("");
+    const [toggled, setToggled] = useState(false);
     const navigate = useNavigate();
 
     function isValidGithubUrl(url: string): boolean {
@@ -57,6 +58,13 @@ export default function Welcome() {
     return (
         <section>
             <img src={RALogo} alt="Repository Analyzer Logo" className="logo" />
+            <div className="toggle-container">
+                <button className={`toggle-button ${toggled ? 'toggled': ' '}`}
+                onClick={() => setToggled(!toggled)}>
+                    <div className="thumb"></div>
+                </button>
+                <h4>Use OpenAI API Key?</h4>
+            </div>
             <h1>Welcome</h1>
             <h3>Enter your Github Repository URL below</h3>
             <form className="welcome-form" onSubmit={handleSubmit}>
