@@ -10,3 +10,4 @@ class ImportRequest(BaseModel):
     embedding_model: str
     chat_provider: str
     chat_model: str
+    
