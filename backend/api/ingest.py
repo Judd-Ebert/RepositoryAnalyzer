@@ -14,6 +14,8 @@ import openai
 
 import logging
 
+import uuid
+
 
 # ** Helper Functions
 
@@ -88,19 +90,23 @@ def validate_openai_embedding_access(api_key: str, model: str) -> None:
                 },
             )
         
-def process_repo_task(github_url: str):
+def process_repo_task(github_url: str, job_id: str, request: ImportRequest):
     """Clones, chunks, embeds, and indexes a repo URL"""
     local_path = None
 
     try:
+        #Status = Importing
         local_path = clone_repo(github_url)
         
+        #Status = Chunking
         chunks = chunk_repository(local_path)
         if not chunks:
             logging.error("Text chunks not found")
         
-        chunks = embed_chunks(chunks)
-        
+        #Status = Embedding
+        chunks = embed_chunks(chunks, request)
+
+        #Status = Indexing
         repo_id = build_index(chunks, github_url)
         
     except Exception as e:
@@ -108,6 +114,8 @@ def process_repo_task(github_url: str):
     finally:
         if local_path:
             shutil.rmtree(local_path, ignore_errors=True) #Deletes copied files
+    
+    #Status = Completed
 
 
 # ** Routes
@@ -120,17 +128,16 @@ async def ingest(request: ImportRequest, background_tasks: BackgroundTasks):
     if request.embedding_provider == "OpenAI":
         validate_openai_embedding_access(request.embedding_key, request.embedding_model)
 
-
-
     """Creates background task to ingest and sends back message"""
     github_url = request.github_url
     
     if "github.com" not in github_url:
         raise HTTPException(status_code=400, detail="Invalid GitHub URL")
     
-    background_tasks.add_task(process_repo_task, github_url)
+    job_id = str(uuid.uuid4())
     
-    return {"message": "Ingestion started", "url": github_url} #Return background job id here for pinging?
-
+    background_tasks.add_task(process_repo_task, github_url, job_id, request)
+    
+    return {"message": "Ingestion started", "url": github_url, "job_id": job_id} 
 
    
