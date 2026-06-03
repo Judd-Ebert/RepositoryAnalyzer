@@ -41,7 +41,8 @@ export default function Welcome() {
         });
 
         if (!response.ok) {
-            throw new Error("Failed to start ingestion");
+            const err = await response.json()
+            throw new Error(err?.detail?.message ?? "Ingestion failed :(");
         }
         else {
             console.log("Ingestion started successfully");
