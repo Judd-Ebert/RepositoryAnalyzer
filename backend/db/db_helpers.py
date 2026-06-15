@@ -1,8 +1,39 @@
 import sqlite3
 
+from typing import Optional
+
+DB_PATH = "backend/storage/app.db"
+CURRENT_SCHEMA_VERSION = 1
+
+PERMANENT_USER_PREFERENCES_ID = 1
+
+#!** Utils**!
+
+def get_connection() -> sqlite3.Connection:
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    return connection
+
+def mark_repository_ingested(github_url: str, repo_id: str) -> None:
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            """
+            UPDATE repositories
+            SET repo_id = ?,
+            last_ingested_at = CURRENT_TIMESTAMP
+            WHERE github_url = ?
+            """,
+            (repo_id, github_url),
+        )
+        connection.commit()
+    finally:
+        connection.close()
 
 def init_db():
-    connection = sqlite3.connect("backend/storage/app.db") #Finds/creates the file
+    connection = sqlite3.connect(DB_PATH) #Finds/creates the file
     connection.row_factory = sqlite3.Row #Can access rows by their names instead of indicies
     cursor = connection.cursor() #Lets me run commands on db
 
@@ -10,7 +41,6 @@ def init_db():
     CREATE TABLE IF NOT EXISTS repositories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         github_url TEXT NOT NULL UNIQUE,
-        repo_hash TEXT,
         repo_id TEXT,
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
         last_ingested_at TEXT
@@ -35,7 +65,6 @@ def init_db():
         github_url TEXT NOT NULL,
         status TEXT NOT NULL,
         stage TEXT,
-        progress INTEGER DEFAULT 0,
         error_code TEXT,
         error_message TEXT,
         repo_id TEXT,
@@ -45,4 +74,102 @@ def init_db():
         );"""
     )
 
-#def migrate_db():
+    connection.commit()
+    connection.close()
+
+#!** Preferences Management **!
+
+def set_preferences(embedding_provider: str, embedding_model: str, chat_provider: str, chat_model: str, embedding_credential_ref: Optional[str] = None, chat_credential_ref: Optional[str] = None) -> None:
+    connection = get_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute(
+            """
+            INSERT OR REPLACE INTO preferences (id, embedding_provider, embedding_model, chat_provider, chat_model, embedding_credential_ref, chat_credential_ref) VALUES (?, ?, ?, ?, ?, ?);
+            """
+            (PERMANENT_USER_PREFERENCES_ID, embedding_provider, embedding_model, chat_provider, chat_model, embedding_credential_ref, chat_credential_ref,),
+        )
+        connection.commit()
+    finally:
+        connection.close()
+
+#!** Repository Management **!
+
+def upsert_repository(github_url: str) -> int:
+    connection = get_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute(
+            """
+            INSERT OR IGNORE INTO repositories (github_url) VALUES (?);
+            """,
+            (github_url,),
+        )
+        cursor.execute(
+            """
+            SELECT id FROM repositories
+            WHERE github_url = ?;
+            """,
+            (github_url,),
+        )
+        row = cursor.fetchone()
+        connection.commit()
+        return int(row["id"])
+    finally:
+        connection.close()
+
+
+
+#!** Job Management **!
+
+
+def create_job(job_id: str, github_url: str, status: str = "queued") -> None:
+    connection = get_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute(
+            """
+            INSERT INTO jobs (job_id, github_url, status) VALUES (?, ?, ?);
+            """,
+            (job_id, github_url, status),
+        )
+        connection.commit()
+    finally:
+        connection.close()
+
+def update_job_status(job_id: str, stage: str, status: str, error_code: Optional[str] = None, error_message: Optional[str] = None) -> None:
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            """
+            UPDATE jobs
+            SET
+                status = ?,
+                stage = ?,
+                error_code = COALESCE(?, error_code),
+                error_message = COALESCE(?, error_message)
+            WHERE job_id = ?
+            """,
+            (status, stage, error_code, error_message, job_id),
+        )
+        connection.commit()
+    finally:
+        connection.close()
+
+def get_job_status(job_id: str) -> Optional[sqlite3.Row]:
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            """
+            SELECT * FROM jobs
+            WHERE job_id = ?;
+            """,
+            (job_id,),
+        )
+        return cursor.fetchone()
+    finally:
+        connection.close()
