@@ -1,11 +1,9 @@
 import sqlite3
-
 from typing import Optional
 
-DB_PATH = "backend/storage/app.db"
-CURRENT_SCHEMA_VERSION = 1
+from backend.config.config import PERMANENT_USER_PREFERENCES_ID
 
-PERMANENT_USER_PREFERENCES_ID = 1
+DB_PATH = "backend/storage/app.db"
 
 #!** Utils**!
 
@@ -53,8 +51,8 @@ def init_db():
         embedding_model TEXT NOT NULL,
         chat_provider TEXT NOT NULL,
         chat_model TEXT NOT NULL,
-        embedding_credential_ref TEXT,
-        chat_credential_ref TEXT,
+        embedding_api_key_username TEXT NOT NULL,
+        chat_api_key_username TEXT NOT NULL,
         updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
         );"""
     )
@@ -79,15 +77,15 @@ def init_db():
 
 #!** Preferences Management **!
 
-def set_preferences(embedding_provider: str, embedding_model: str, chat_provider: str, chat_model: str, embedding_credential_ref: Optional[str] = None, chat_credential_ref: Optional[str] = None) -> None:
+def set_preferences(embedding_provider: str, embedding_model: str, chat_provider: str, chat_model: str, embedding_api_key_username: str, chat_api_key_username: str) -> None:
     connection = get_connection()
     cursor = connection.cursor()
     try:
         cursor.execute(
             """
-            INSERT OR REPLACE INTO preferences (id, embedding_provider, embedding_model, chat_provider, chat_model, embedding_credential_ref, chat_credential_ref) VALUES (?, ?, ?, ?, ?, ?);
+            INSERT OR REPLACE INTO preferences (id, embedding_provider, embedding_model, chat_provider, chat_model, embedding_api_key_username, chat_api_key_username) VALUES (?, ?, ?, ?, ?, ?, ?);
             """
-            (PERMANENT_USER_PREFERENCES_ID, embedding_provider, embedding_model, chat_provider, chat_model, embedding_credential_ref, chat_credential_ref,),
+            (PERMANENT_USER_PREFERENCES_ID, embedding_provider, embedding_model, chat_provider, chat_model, embedding_api_key_username, chat_api_key_username),
         )
         connection.commit()
     finally:

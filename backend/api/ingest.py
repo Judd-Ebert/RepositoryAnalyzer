@@ -1,6 +1,7 @@
 from fastapi import HTTPException, BackgroundTasks
 from fastapi import APIRouter
 import shutil
+from backend.db.api_key_storage_helpers import create_api_key
 from backend.db.db_helpers import create_job, set_preferences, update_job_status, upsert_repository
 from backend.ingestion.cloner import clone_repo
 from backend.ingestion.chunker import chunk_repository
@@ -142,15 +143,19 @@ async def ingest(request: ImportRequest, background_tasks: BackgroundTasks):
         raise HTTPException(status_code=400, detail="Invalid GitHub URL")
     
     #Create Keys
-    
+    chat_model_username = f"chat-{request.chat_provider}-{request.chat_model}"
+    embedding_model_username = f"embedding-{request.embedding_provider}-{request.embedding_model}"
+
+    create_api_key(embedding_model_username, request.embedding_key)
+    create_api_key(chat_model_username, request.chat_key)
     
     set_preferences(
         embedding_provider=request.embedding_provider,
         embedding_model=request.embedding_model,
         chat_provider=request.chat_provider,
         chat_model=request.chat_model,
-        embedding_credential_ref=f"embedding-{job_id}",
-        chat_credential_ref=f"chat-{job_id}"
+        embedding_api_key_username=embedding_model_username,
+        chat_api_key_username=chat_model_username,
     )
     upsert_repository(github_url)
     

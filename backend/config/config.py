@@ -4,6 +4,10 @@ from openai import OpenAI
 
 KEYRING_SERVICE = "RepositoryAnalyzer"
 
+CURRENT_SCHEMA_VERSION = 1
+
+PERMANENT_USER_PREFERENCES_ID = 1
+
 FLOATS_PER_CHUNK=768 # 3072 For Regular Use
 
 STORAGE_DIR = "backend/storage"
