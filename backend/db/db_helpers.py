@@ -119,7 +119,6 @@ def upsert_repository(github_url: str) -> int:
         connection.close()
 
 
-
 #!** Job Management **!
 
 

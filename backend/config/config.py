@@ -2,6 +2,8 @@
 # client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 from openai import OpenAI
 
+KEYRING_SERVICE = "RepositoryAnalyzer"
+
 FLOATS_PER_CHUNK=768 # 3072 For Regular Use
 
 STORAGE_DIR = "backend/storage"

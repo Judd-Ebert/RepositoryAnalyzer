@@ -1,0 +1,26 @@
+import keyring
+
+from keyring.errors import PasswordDeleteError
+
+import sqlite3
+
+from typing import Optional
+
+from backend.config.config import KEYRING_SERVICE
+
+from .db_helpers import get_connection
+
+
+#!** API Key Management **!
+
+def store_api_key(provider: str, api_key: str) -> None:
+    keyring.set_password(KEYRING_SERVICE, provider, api_key)
+
+def get_api_key(provider: str,) -> Optional[str]:
+    return keyring.get_password(KEYRING_SERVICE, provider)
+
+def delete_api_key(provider: str) -> None:
+    try:
+        keyring.delete_password(KEYRING_SERVICE, provider)
+    except PasswordDeleteError:
+        pass
