@@ -1,13 +1,15 @@
 from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
-from ..main import app
+from fastapi import APIRouter
 
 import logging
 
 from backend.search.retriever import retrieve
 from backend.llm.explainer import explain
 
-@app.get("/query")
+router = APIRouter()
+
+@router.get("/query")
 async def query(repo_id: str, question: str, top_k: int):
     """Ask a question about an indexed repo"""
     try:

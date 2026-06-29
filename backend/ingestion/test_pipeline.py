@@ -40,7 +40,6 @@ def run_pipeline(url: str):
     repo_id = build_index(chunks, url)
     print(f"repo_id: {repo_id}")
     print(f"Files: backend/storage/{repo_id}.index + .json")
-
     print(f"\n--- Done ---")
     return repo_id
 
