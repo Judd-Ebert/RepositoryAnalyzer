@@ -1,6 +1,13 @@
-# For Regular Use 
-# client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+import os
+
 from openai import OpenAI
+
+
+# Use local Ollama by default; allow env vars to switch to hosted OpenAI-compatible endpoints.
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY", "ollama"),
+    base_url=os.environ.get("OPENAI_BASE_URL", "http://localhost:11434/v1"),
+)
 
 KEYRING_SERVICE = "RepositoryAnalyzer"
 
@@ -11,10 +18,6 @@ PERMANENT_USER_PREFERENCES_ID = 1
 FLOATS_PER_CHUNK=768 # 3072 For Regular Use
 
 STORAGE_DIR = "backend/storage"
-
-
-"""client = OpenAI(api_key="ollama",
-                base_url="http://localhost:11434/v1")"""
 
 
 SYSTEM_PROMPT = """

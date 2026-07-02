@@ -1,4 +1,5 @@
 import sqlite3
+from pathlib import Path
 from typing import Optional
 
 from backend.config.config import PERMANENT_USER_PREFERENCES_ID
@@ -31,6 +32,7 @@ def mark_repository_ingested(github_url: str, repo_id: str) -> None:
         connection.close()
 
 def init_db():
+    Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
     connection = sqlite3.connect(DB_PATH) #Finds/creates the file
     connection.row_factory = sqlite3.Row #Can access rows by their names instead of indicies
     cursor = connection.cursor() #Lets me run commands on db
@@ -84,7 +86,7 @@ def set_preferences(embedding_provider: str, embedding_model: str, chat_provider
         cursor.execute(
             """
             INSERT OR REPLACE INTO preferences (id, embedding_provider, embedding_model, chat_provider, chat_model, embedding_api_key_username, chat_api_key_username) VALUES (?, ?, ?, ?, ?, ?, ?);
-            """
+            """,
             (PERMANENT_USER_PREFERENCES_ID, embedding_provider, embedding_model, chat_provider, chat_model, embedding_api_key_username, chat_api_key_username),
         )
         connection.commit()
