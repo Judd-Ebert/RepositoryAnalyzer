@@ -1,6 +1,17 @@
 .submit-button {
   margin: 20px;
 }
+
+.welcome-form {
+  color: #000;
+}
+
+
+.welcome-form input::placeholder,
+.welcome-form textarea::placeholder {
+  color: var(--bg);
+}
+
 :root {
 
   color-scheme: light dark; /* Neccesary for dark mode */
@@ -127,21 +138,25 @@ button:active {
 
 /* ON/OFF toggle*/
 .toggle-button {
-  background-color: #a5a5a5;
-  border: 2px solid #2f2f2f;
+  background-color: var(--bg);
+  border: 2px solid var(--border);
   border-radius: 99px;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
   width: 50px;
   height: 28px;
   transition: background-color 0.1s ease, border-color 0.2s ease;
   cursor: pointer;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.748);
+  box-shadow: 1px 1px 10px rgb(from var(--accent) r g b / 0.5);;
   position: relative;
+  overflow: hidden;
 }
 
 .toggle-button .thumb {
   height: 18px;
   width: 18px;
-  background-color: var(--surface);
+  background-color: var(--accent);
   border-radius: 99px;
   transition: left .15s ease;
   position: absolute;
@@ -160,6 +175,7 @@ button:active {
 
 .toggle-button.toggled .thumb {
   left: calc(50px - 20px - 6px);
+  background-color: var(--bg);
 }
 
 input, button {
@@ -174,3 +190,4 @@ input, button {
   color: red;
   margin-top: 10px;
 }
+
