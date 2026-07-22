@@ -136,6 +136,36 @@ button:active {
   background-color: var(--surface);
 }
 
+.selector-label {
+  display: block;
+  margin: .75rem 0 .35rem;
+  color: var(--fg);
+  font-weight: 600;
+  text-align: left;
+}
+
+.selector-input {
+  width: 100%;
+  max-width: 200px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  background-color: var(--surface);
+  color: var(--fg);
+  padding: 0.65rem 0.8rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.selector-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.selector-input option {
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
 /* ON/OFF toggle*/
 .toggle-button {
   background-color: var(--bg);

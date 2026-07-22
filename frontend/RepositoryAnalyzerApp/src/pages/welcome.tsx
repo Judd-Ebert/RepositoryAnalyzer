@@ -1,5 +1,5 @@
 import "../App.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RALogo from "../assets/RALogo.png";
 import { useNavigate } from "react-router-dom";
 
@@ -7,11 +7,34 @@ import { useNavigate } from "react-router-dom";
 export default function Welcome() {
     const [repoUrl, setRepoUrl] = useState("");
     const [embeddingApiKey, setApiKey] = useState("");
-    const [embeddingModel, setEmbeddingModel] = useState("");
     const [chatApiKey, setChatApiKey] = useState("");
     const [chatModel, setChatModel] = useState("");
     const [error, setError] = useState("");
-    //const [toggled, setToggled] = useState(false);
+    
+    const EMBEDDING_MODEL_CATALOG: Record<string, string[]> = {
+        OpenAI: ["text-embedding-3-large", "text-embedding-3-small"],
+        Gemini: ["gemini-embedding-001", "gemini-embedding-2"]
+    }
+    
+    const [embeddingProvider, setEmbeddingProvider] = useState("OpenAI");
+    
+    const [embeddingModel, setEmbeddingModel] = useState("text-embedding-3-large");
+
+    const modelsForEmbeddingProvider = EMBEDDING_MODEL_CATALOG[embeddingProvider] ?? [];
+
+    useEffect(() => {
+        if (!modelsForEmbeddingProvider.includes(embeddingModel)) {
+            setEmbeddingModel(modelsForEmbeddingProvider[0] ?? "");
+        }
+        
+    }, [embeddingProvider, embeddingModel, modelsForEmbeddingProvider]
+);
+
+
+
+
+
+
     const navigate = useNavigate();
 
     function isValidGithubUrl(url: string): boolean {
@@ -66,6 +89,28 @@ export default function Welcome() {
             
             <h1>Welcome</h1>
             <h3>Enter API Keys, models, and github repository URL below</h3>
+            <label className="selector-label">Embedding Model Provider</label>
+            <select
+            className="selector-input"
+            value={embeddingProvider}
+            onChange={(e) => setEmbeddingProvider(e.currentTarget.value)}
+            
+            >
+                {Object.keys(EMBEDDING_MODEL_CATALOG).map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                ))}
+            </select>
+
+            <label className="selector-label">Embedding Model</label>
+            <select
+            className="selector-input"
+            value={embeddingModel}
+            onChange={(e) => setEmbeddingModel(e.currentTarget.value)}
+            >
+                {modelsForEmbeddingProvider.map((m) => (
+                    <option key={m} value={m}>{m}</option>
+                ))}
+            </select>
             <form className="welcome-form" onSubmit={handleSubmit}>
                 <input type="text"
                 placeholder="https://github.com/owner/repo"
