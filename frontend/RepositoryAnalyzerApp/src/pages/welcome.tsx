@@ -9,31 +9,50 @@ export default function Welcome() {
     const [repoUrl, setRepoUrl] = useState("");
     const [embeddingApiKey, setApiKey] = useState("");
     const [chatApiKey, setChatApiKey] = useState("");
-    const [chatModel, setChatModel] = useState("");
     const [error, setError] = useState("");
     
     const EMBEDDING_MODEL_CATALOG: Record<string, string[]> = {
         OpenAI: ["text-embedding-3-large", "text-embedding-3-small"],
         Gemini: ["gemini-embedding-001", "gemini-embedding-2"]
     }
+    const CHAT_MODEL_CATALOG: Record<string, string[]> = {
+        OpenAI: ["gpt-4", "gpt-3.5-turbo"],
+        Gemini: ["3.1 Pro", "3.6 Flash"]
+    };
 
     const [embeddingProvider, setEmbeddingProvider] = useState("OpenAI");
+
+    const [chatProvider, setChatProvider] = useState("OpenAI");
     
     const [embeddingModel, setEmbeddingModel] = useState("text-embedding-3-large");
 
+    const [chatModel, setChatModel] = useState("gpt-4");
+
     const modelsForEmbeddingProvider = EMBEDDING_MODEL_CATALOG[embeddingProvider] ?? [];
+
+    const modelsForChatProvider = CHAT_MODEL_CATALOG[chatProvider] ?? [];
 
     interface Option {
         label: string;
         value: string;
     }
 
-    const providerOptions: Option[] = Object.keys(EMBEDDING_MODEL_CATALOG).map((provider) => ({
+    const embeddingProviderOptions: Option[] = Object.keys(EMBEDDING_MODEL_CATALOG).map((provider) => ({
         label: provider,
         value: provider
     }));
 
-    const modelOptions: Option[] = modelsForEmbeddingProvider.map((model) => ({
+    const chatProviderOptions: Option[] = Object.keys(CHAT_MODEL_CATALOG).map((provider) => ({
+        label: provider,
+        value: provider
+    }));
+
+    const embeddingModelOptions: Option[] = modelsForEmbeddingProvider.map((model) => ({
+        label: model,
+        value: model
+    }));
+
+    const chatModelOptions: Option[] = modelsForChatProvider.map((model) => ({
         label: model,
         value: model
     }));
@@ -107,21 +126,44 @@ export default function Welcome() {
             
             <h1>Welcome</h1>
             <h3>Enter API Keys, models, and github repository URL below</h3>
+            <div
+            className="dropdown-section"
+            >
+                <div
+                className="dropdown-container"
+                >
+                    <Dropdown
+                        label="Embedding Model Provider"
+                        options={embeddingProviderOptions}
+                        value={embeddingProvider}
+                        onChange={setEmbeddingProvider}
+                    />
 
+                    <Dropdown
+                        label="Embedding Model"
+                        options={embeddingModelOptions}
+                        value={embeddingModel}
+                        onChange={setEmbeddingModel}
+                    /></div>
+                <div
+                className="dropdown-container"
+                >
+                    <Dropdown
+                        label="Chat Model Provider"
+                        options={chatProviderOptions}
+                        value={chatProvider}
+                        onChange={setChatProvider}
+                    />
 
-            <Dropdown
-                label="Embedding Model Provider"
-                options={providerOptions}
-                value={embeddingProvider}
-                onChange={setEmbeddingProvider}
-            />
+                    <Dropdown
+                        label="Chat Model"
+                        options={chatModelOptions}
+                        value={chatModel}
+                        onChange={setChatModel}
+                    />
 
-            <Dropdown
-                label="Embedding Model"
-                options={modelOptions}
-                value={embeddingModel}
-                onChange={setEmbeddingModel}
-            />
+                </div>
+            </div>
             <form className="welcome-form" onSubmit={handleSubmit}>
                 <input type="text"
                 placeholder="https://github.com/owner/repo"

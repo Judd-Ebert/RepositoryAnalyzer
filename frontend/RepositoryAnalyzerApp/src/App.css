@@ -204,6 +204,23 @@ button:active {
   font-weight: 600;
 }
 
+.dropdown-container {
+  display: flex;
+  gap: 1rem;
+
+  margin-bottom: 1rem;
+}
+
+.dropdown-section {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;   
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
 /* ON/OFF toggle*/
 .toggle-button {
   background-color: var(--bg);
