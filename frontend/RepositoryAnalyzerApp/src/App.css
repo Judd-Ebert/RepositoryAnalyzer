@@ -207,11 +207,10 @@ button:active {
 .dropdown-container {
   display: flex;
   gap: 1rem;
-
-  margin-bottom: 1rem;
+  min-width: 350px;
 }
 
-.dropdown-section {
+.info-gathering-section {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -219,6 +218,17 @@ button:active {
   flex-wrap: wrap;   
   gap: 1rem;
   margin-bottom: 1rem;
+}
+
+.info-gathering-cell {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 16px color-mix(in srgb, var(--accent) 10%, transparent);
+  gap: 1rem;
 }
 
 /* ON/OFF toggle*/

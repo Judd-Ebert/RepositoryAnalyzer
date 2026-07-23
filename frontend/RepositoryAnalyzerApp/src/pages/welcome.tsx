@@ -7,7 +7,7 @@ import Dropdown from "../components/Dropdown/dropdown";
 
 export default function Welcome() {
     const [repoUrl, setRepoUrl] = useState("");
-    const [embeddingApiKey, setApiKey] = useState("");
+    const [embeddingApiKey, setEmbeddingApiKey] = useState("");
     const [chatApiKey, setChatApiKey] = useState("");
     const [error, setError] = useState("");
     
@@ -127,41 +127,70 @@ export default function Welcome() {
             <h1>Welcome</h1>
             <h3>Enter API Keys, models, and github repository URL below</h3>
             <div
-            className="dropdown-section"
+            className="info-gathering-section"
             >
                 <div
-                className="dropdown-container"
+                className="info-gathering-cell"
                 >
-                    <Dropdown
-                        label="Embedding Model Provider"
-                        options={embeddingProviderOptions}
-                        value={embeddingProvider}
-                        onChange={setEmbeddingProvider}
-                    />
+                    <div
+                    className="dropdown-container"
+                    >
+                        <Dropdown
+                            label="Embedding Model Provider"
+                            options={embeddingProviderOptions}
+                            value={embeddingProvider}
+                            onChange={setEmbeddingProvider}
+                        />
 
-                    <Dropdown
-                        label="Embedding Model"
-                        options={embeddingModelOptions}
-                        value={embeddingModel}
-                        onChange={setEmbeddingModel}
-                    /></div>
+                        <Dropdown
+                            label="Embedding Model"
+                            options={embeddingModelOptions}
+                            value={embeddingModel}
+                            onChange={setEmbeddingModel}
+                        />
+                    </div>
+
+                    <form className="welcome-form" onSubmit={handleSubmit}>
+                        <input type="text"
+                        placeholder="Enter your API key"
+                        className="input-field"
+                        size={40}
+                        value={embeddingApiKey}
+                        onChange={(e) => setEmbeddingApiKey(e.currentTarget.value)}
+                        />
+                    </form>
+
+                </div>
                 <div
-                className="dropdown-container"
+                className="info-gathering-cell"
                 >
-                    <Dropdown
-                        label="Chat Model Provider"
-                        options={chatProviderOptions}
-                        value={chatProvider}
-                        onChange={setChatProvider}
-                    />
+                    <div
+                    className="dropdown-container"
+                    >
+                        <Dropdown
+                            label="Chat Model Provider"
+                            options={chatProviderOptions}
+                            value={chatProvider}
+                            onChange={setChatProvider}
+                        />
 
-                    <Dropdown
-                        label="Chat Model"
-                        options={chatModelOptions}
-                        value={chatModel}
-                        onChange={setChatModel}
-                    />
+                        <Dropdown
+                            label="Chat Model"
+                            options={chatModelOptions}
+                            value={chatModel}
+                            onChange={setChatModel}
+                        />
 
+                    </div>
+                    <form className="welcome-form" onSubmit={handleSubmit}>
+                        <input type="text"
+                        placeholder="Enter your API key"
+                        className="input-field"
+                        size={40}
+                        value={chatApiKey}
+                        onChange={(e) => setChatApiKey(e.currentTarget.value)}
+                        />
+                    </form>
                 </div>
             </div>
             <form className="welcome-form" onSubmit={handleSubmit}>
