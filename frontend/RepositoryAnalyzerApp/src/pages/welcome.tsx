@@ -2,6 +2,7 @@ import "../App.css";
 import { useEffect, useState } from "react";
 import RALogo from "../assets/RALogo.png";
 import { useNavigate } from "react-router-dom";
+import Dropdown from "../components/Dropdown/dropdown";
 
 
 export default function Welcome() {
@@ -15,12 +16,29 @@ export default function Welcome() {
         OpenAI: ["text-embedding-3-large", "text-embedding-3-small"],
         Gemini: ["gemini-embedding-001", "gemini-embedding-2"]
     }
-    
+
     const [embeddingProvider, setEmbeddingProvider] = useState("OpenAI");
     
     const [embeddingModel, setEmbeddingModel] = useState("text-embedding-3-large");
 
     const modelsForEmbeddingProvider = EMBEDDING_MODEL_CATALOG[embeddingProvider] ?? [];
+
+    interface Option {
+        label: string;
+        value: string;
+    }
+
+    const providerOptions: Option[] = Object.keys(EMBEDDING_MODEL_CATALOG).map((provider) => ({
+        label: provider,
+        value: provider
+    }));
+
+    const modelOptions: Option[] = modelsForEmbeddingProvider.map((model) => ({
+        label: model,
+        value: model
+    }));
+    
+    
 
     useEffect(() => {
         if (!modelsForEmbeddingProvider.includes(embeddingModel)) {
@@ -89,28 +107,21 @@ export default function Welcome() {
             
             <h1>Welcome</h1>
             <h3>Enter API Keys, models, and github repository URL below</h3>
-            <label className="selector-label">Embedding Model Provider</label>
-            <select
-            className="selector-input"
-            value={embeddingProvider}
-            onChange={(e) => setEmbeddingProvider(e.currentTarget.value)}
-            
-            >
-                {Object.keys(EMBEDDING_MODEL_CATALOG).map((p) => (
-                    <option key={p} value={p}>{p}</option>
-                ))}
-            </select>
 
-            <label className="selector-label">Embedding Model</label>
-            <select
-            className="selector-input"
-            value={embeddingModel}
-            onChange={(e) => setEmbeddingModel(e.currentTarget.value)}
-            >
-                {modelsForEmbeddingProvider.map((m) => (
-                    <option key={m} value={m}>{m}</option>
-                ))}
-            </select>
+
+            <Dropdown
+                label="Embedding Model Provider"
+                options={providerOptions}
+                value={embeddingProvider}
+                onChange={setEmbeddingProvider}
+            />
+
+            <Dropdown
+                label="Embedding Model"
+                options={modelOptions}
+                value={embeddingModel}
+                onChange={setEmbeddingModel}
+            />
             <form className="welcome-form" onSubmit={handleSubmit}>
                 <input type="text"
                 placeholder="https://github.com/owner/repo"
