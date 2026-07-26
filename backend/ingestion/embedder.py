@@ -37,6 +37,12 @@ def call_api_batch(batch: list[dict], embedding_provider: str, embedding_model: 
                 # For Regular Use: model="text-embedding-3-large"
                 model = embedding_model, #"nomic-embed-text",
             )
+        if embedding_provider != "Ollama":
+             client = OpenAI(api_key=embedding_api_key, base_url="http://localhost:11434/v1")
+             response = client.embeddings.create(
+                 input=texts,
+                 model=embedding_model,
+             )
         for chunk, embedding_obj in zip(batch, response.data):
              chunk["embedding"] = embedding_obj.embedding
         return batch

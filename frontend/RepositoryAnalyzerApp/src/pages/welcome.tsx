@@ -96,6 +96,15 @@ export default function Welcome() {
         }
         setError("");
 
+        if (!embeddingApiKey) {
+            setError("Please enter your embedding API key.");
+            return;
+        }
+        if (!chatApiKey) {
+            setError("Please enter your chat API key.");
+            return;
+        }
+
         const response = await fetch("http://127.0.0.1:8000/ingest", {
             method: "POST",
             headers: {
