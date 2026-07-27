@@ -2,7 +2,9 @@ import faiss
 import json
 import numpy as np
 from backend.config.config import build_client, client, FLOATS_PER_CHUNK, STORAGE_DIR
-import os
+from backend.db.db_helpers import get_preferences
+from backend.db.api_key_storage_helpers import get_api_key
+
 
 
 
@@ -35,9 +37,15 @@ def load_data(repo_id: str):
 
 
 def call_api_question_chunks(question: str):
-    provider = os.environ.get("EMBEDDING_PROVIDER")
-    api_key = os.environ.get("EMBEDDING_API_KEY")
-    model = os.environ.get("EMBEDDING_MODEL")
+    prefs = get_preferences()
+    if not prefs:
+        raise ValueError("No saved preferences found. Run ingest first.")
+    provider = prefs.get("embedding_provider")
+    api_key = prefs.get("embedding_api_key")
+    model = prefs.get("embedding_model")
+
+    if not provider or not api_key or not model:
+        raise ValueError("Missing required embedding preferences")
 
     client = build_client(provider, api_key)
     response = client.embeddings.create(

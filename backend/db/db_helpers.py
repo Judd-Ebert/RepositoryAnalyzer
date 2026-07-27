@@ -93,6 +93,32 @@ def set_preferences(embedding_provider: str, embedding_model: str, chat_provider
     finally:
         connection.close()
 
+def get_preferences() -> dict:
+    connection = get_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute(
+            """
+            SELECT embedding_provider, embedding_model, chat_provider, chat_model, embedding_api_key_username, chat_api_key_username
+            FROM preferences
+            WHERE id = ?;
+            """,
+            (PERMANENT_USER_PREFERENCES_ID,),
+        )
+        row = cursor.fetchone()
+        if row:
+            return {
+                "embedding_provider": row["embedding_provider"],
+                "embedding_model": row["embedding_model"],
+                "chat_provider": row["chat_provider"],
+                "chat_model": row["chat_model"],
+                "embedding_api_key_username": row["embedding_api_key_username"],
+                "chat_api_key_username": row["chat_api_key_username"],
+            }
+        return {}
+    finally:
+        connection.close()
+
 #!** Repository Management **!
 
 def upsert_repository(github_url: str) -> int:

@@ -23,7 +23,7 @@ import uuid
 def validate_embedding_access(api_key: str, model: str, provider: str,) -> None:
         #Dummy call to check if API key is valid and has access to the model
         provider = normalize_provider(provider)
-        if provider not in ("openai", "ollama"):
+        if provider not in ("OpenAI", "Ollama"):
             raise HTTPException(
                 status_code=400,
                 detail={

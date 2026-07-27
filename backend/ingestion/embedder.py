@@ -9,7 +9,7 @@ import os
 from itertools import islice
 from tenacity import retry, wait_exponential, retry_if_exception_type
 
-from backend.config.config import OPENAI_URL, OLLAMA_URL, normalize_provider
+from backend.config.config import OPENAI_URL, OLLAMA_URL, normalize_provider, build_client
 from backend.models.schemas import ImportRequest
 
 load_dotenv()
@@ -32,9 +32,9 @@ def embed_chunks(chunks: list[dict], request: ImportRequest) -> list[dict]:
 def call_api_batch(batch: list[dict], embedding_provider: str, embedding_model: str, embedding_api_key: str):
         texts = [chunk["text"] for chunk in batch]
         provider = normalize_provider(embedding_provider)
-        if provider not in ("openai", "ollama"):
+        if provider not in ("OpenAI", "Ollama"):
             raise ValueError(f"Unsupported embedding provider: {embedding_provider}")
-        client = OpenAI(api_key=embedding_api_key, base_url=OPENAI_URL) #? Should the API key be accessed through the database here?
+        client = build_client(provider, embedding_api_key) #? Should the API key be accessed through the database here?
         response = client.embeddings.create(
             input=texts,
             model = embedding_model,

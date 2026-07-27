@@ -59,6 +59,7 @@ def build_client(provider: str, explicit_key: str | None = None) -> OpenAI:
     )
 
 
+
 SYSTEM_PROMPT = """
 You are RepositoryAnalyzer, a codebase Q&A assistant.
 Rules:
