@@ -24,9 +24,13 @@ OPENAI_URL = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
 OLLAMA_URL = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434/v1")
 
 def normalize_provider(provider: str) -> str:
-    if provider.lower() == "openai":
+    if not provider:
+        raise ValueError("Provider is required.")
+
+    provider = provider.strip().lower()
+    if provider == "openai":
         return "OpenAI"
-    elif provider.lower() == "ollama":
+    elif provider == "ollama":
         return "Ollama"
     else:
         raise ValueError(f"Unsupported provider: {provider}")

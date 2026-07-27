@@ -149,7 +149,7 @@ router = APIRouter()
 @router.post("/ingest")
 async def ingest(request: ImportRequest, background_tasks: BackgroundTasks):
     #Validate Keys
-    if request.embedding_provider == "OpenAI" or request.embedding_provider == "Ollama":
+    if request.embedding_provider.lower() == "openai" or request.embedding_provider.lower() == "ollama":
         validate_embedding_access(request.embedding_key, request.embedding_model, request.embedding_provider)
 
     """Creates background task to ingest and sends back message"""

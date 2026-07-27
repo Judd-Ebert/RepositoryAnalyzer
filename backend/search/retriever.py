@@ -41,8 +41,8 @@ def call_api_question_chunks(question: str):
     if not prefs:
         raise ValueError("No saved preferences found. Run ingest first.")
     provider = prefs.get("embedding_provider")
-    api_key = prefs.get("embedding_api_key")
     model = prefs.get("embedding_model")
+    api_key = get_api_key(prefs.get("embedding_username"))
 
     if not provider or not api_key or not model:
         raise ValueError("Missing required embedding preferences")

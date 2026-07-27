@@ -24,6 +24,3 @@ def delete_api_key(username: str) -> None:
         keyring.delete_password(KEYRING_SERVICE, username)
     except PasswordDeleteError:
         pass
-
-def get_keyring_username(provider, model) -> str:
-    return f"chat-{provider}-{model}"

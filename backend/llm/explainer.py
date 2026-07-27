@@ -2,10 +2,6 @@ from backend.config.config import build_client, SYSTEM_PROMPT
 from backend.db.db_helpers import get_preferences
 from backend.db.api_key_storage_helpers import get_api_key
 
-from backend.config.config import build_client, SYSTEM_PROMPT
-import os
-
-from backend.db.api_key_storage_helpers import get_keyring_username
 
 def explain(question: str, chunks: list[dict],):
     context = ""
@@ -37,8 +33,7 @@ def call_api_question_explain(messages: list):
 
     provider = prefs.get("chat_provider")
     model = prefs.get("chat_model")
-    api_key = get_api_key(get_keyring_username(provider, model))
-
+    api_key = get_api_key(prefs.get("chat_username"))
     if not provider or not api_key or not model:
         raise ValueError("Missing required environment variables for chat API")
 
