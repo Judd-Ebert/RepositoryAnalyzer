@@ -13,11 +13,13 @@ export default function Welcome() {
     
     const EMBEDDING_MODEL_CATALOG: Record<string, string[]> = {
         OpenAI: ["text-embedding-3-large", "text-embedding-3-small"],
-        Gemini: ["gemini-embedding-001", "gemini-embedding-2"]
+        Gemini: ["gemini-embedding-001", "gemini-embedding-2"],
+        Ollama: ["ollama-embedding-001"]
     }
     const CHAT_MODEL_CATALOG: Record<string, string[]> = {
         OpenAI: ["gpt-4", "gpt-3.5-turbo"],
-        Gemini: ["3.1 Pro", "3.6 Flash"]
+        Gemini: ["3.1 Pro", "3.6 Flash"],
+        Ollama: ["ollama-4"],
     };
 
     const [embeddingProvider, setEmbeddingProvider] = useState("OpenAI");
