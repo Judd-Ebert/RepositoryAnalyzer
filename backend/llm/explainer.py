@@ -1,4 +1,5 @@
-from backend.config.config import client, SYSTEM_PROMPT
+from backend.config.config import build_client, SYSTEM_PROMPT
+import os
 
 def explain(question: str, chunks: list[dict],):
     context = ""
@@ -22,8 +23,13 @@ def explain(question: str, chunks: list[dict],):
 
 
 def call_api_question_explain(messages: list):
+    provider = os.environ.get("CHAT_PROVIDER")
+    api_key = os.environ.get("CHAT_API_KEY")
+    model = os.environ.get("CHAT_MODEL")
+    
+    client = build_client(provider, api_key)
     response = client.chat.completions.create(
-        model="qwen3.5:9b", # Would be model="gpt-4o-mini" for production
+        model=model, # Would be model="gpt-4o-mini" for production
         messages=messages,
         stream=True,
     )

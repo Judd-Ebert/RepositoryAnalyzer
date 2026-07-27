@@ -1,7 +1,8 @@
 import faiss
 import json
 import numpy as np
-from backend.config.config import client, FLOATS_PER_CHUNK, STORAGE_DIR
+from backend.config.config import build_client, client, FLOATS_PER_CHUNK, STORAGE_DIR
+import os
 
 
 
@@ -34,9 +35,13 @@ def load_data(repo_id: str):
 
 
 def call_api_question_chunks(question: str):
+    provider = os.environ.get("EMBEDDING_PROVIDER")
+    api_key = os.environ.get("EMBEDDING_API_KEY")
+    model = os.environ.get("EMBEDDING_MODEL")
+
+    client = build_client(provider, api_key)
     response = client.embeddings.create(
         input=question,
-        # For Regular Use: model="text-embedding-3-large"
-        model = "nomic-embed-text"
+        model=model,
     )
     return response.data[0].embedding

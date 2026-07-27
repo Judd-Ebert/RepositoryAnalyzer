@@ -8,6 +8,7 @@ from backend.ingestion.chunker import chunk_repository
 from backend.ingestion.embedder import embed_chunks
 from backend.ingestion.indexer import build_index
 from backend.models.schemas import ImportRequest
+from backend.config.config import OLLAMA_URL, build_client, normalize_provider
 
 from openai import OpenAI
 import openai
@@ -19,20 +20,33 @@ import uuid
 
 # ** Helper Functions
 
-def validate_openai_embedding_access(api_key: str, model: str) -> None:
+def validate_embedding_access(api_key: str, model: str, provider: str,) -> None:
         #Dummy call to check if API key is valid and has access to the model
+        provider = normalize_provider(provider)
+        if provider not in ("openai", "ollama"):
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "code": "unsupported_provider",
+                    "message": f"Unsupported embedding provider: {provider}",
+                    "retryable": False,
+                    "provider": provider,
+                },
+            )
         try:
-            client = OpenAI(api_key=api_key)
-            client.models.retrieve(model)
-
+            client= build_client(provider, api_key)
+            client.embeddings.create(
+                input=["test"],
+                model=model,
+            )
         except openai.AuthenticationError:
             raise HTTPException(
                 status_code=401,
                 detail={
                     "code": "invalid_api_key",
-                    "message": "Your OpenAI API key is invalid.",
+                    "message": f"Your {provider} API key is invalid.",
                     "retryable": False,
-                    "provider": "openai",
+                    "provider": provider,
                 },
             )
 
@@ -43,7 +57,7 @@ def validate_openai_embedding_access(api_key: str, model: str) -> None:
                     "code": "model_access_denied",
                     "message": "API key is valid, but it does not have access to this model.",
                     "retryable": False,
-                    "provider": "openai",
+                    "provider": provider,
                 },
             )
 
@@ -52,9 +66,9 @@ def validate_openai_embedding_access(api_key: str, model: str) -> None:
                 status_code=400,
                 detail={
                     "code": "model_not_found",
-                    "message": "The selected OpenAI model does not exist.",
+                    "message": f"The selected {provider} model does not exist.",
                     "retryable": False,
-                    "provider": "openai",
+                    "provider": provider,
                 },
             )
 
@@ -63,9 +77,9 @@ def validate_openai_embedding_access(api_key: str, model: str) -> None:
                 status_code=429,
                 detail={
                     "code": "rate_limited_or_quota",
-                    "message": "OpenAI rate limit or quota reached. Try again shortly.",
+                    "message": f"{provider} rate limit or quota reached. Try again shortly.",
                     "retryable": True,
-                    "provider": "openai",
+                    "provider": provider,
                 },
             )
 
@@ -74,9 +88,9 @@ def validate_openai_embedding_access(api_key: str, model: str) -> None:
                 status_code=503,
                 detail={
                     "code": "provider_unreachable",
-                    "message": "Could not reach OpenAI. Check network and try again.",
+                    "message": f"Could not reach {provider}. Check network and try again.",
                     "retryable": True,
-                    "provider": "openai",
+                    "provider": provider,
                 },
             )
         
@@ -85,9 +99,9 @@ def validate_openai_embedding_access(api_key: str, model: str) -> None:
                 status_code=502,
                 detail={
                     "code": "provider_error",
-                    "message": "OpenAI returned an unexpected error.",
+                    "message": f"{provider} returned an unexpected error.",
                     "retryable": True,
-                    "provider": "openai",
+                    "provider": provider,
                 },
             )
         
@@ -130,11 +144,13 @@ def process_repo_task(github_url: str, job_id: str, request: ImportRequest):
 
 
 router = APIRouter()
+
+
 @router.post("/ingest")
 async def ingest(request: ImportRequest, background_tasks: BackgroundTasks):
     #Validate Keys
-    if request.embedding_provider == "OpenAI":
-        validate_openai_embedding_access(request.embedding_key, request.embedding_model)
+    if request.embedding_provider == "OpenAI" or request.embedding_provider == "Ollama":
+        validate_embedding_access(request.embedding_key, request.embedding_model, request.embedding_provider)
 
     """Creates background task to ingest and sends back message"""
     github_url = request.github_url

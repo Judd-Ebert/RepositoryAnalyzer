@@ -19,6 +19,45 @@ FLOATS_PER_CHUNK=768 # 3072 For Regular Use
 
 STORAGE_DIR = "backend/storage"
 
+OPENAI_URL = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
+
+OLLAMA_URL = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434/v1")
+
+def normalize_provider(provider: str) -> str:
+    if provider.lower() == "openai":
+        return "OpenAI"
+    elif provider.lower() == "ollama":
+        return "Ollama"
+    else:
+        raise ValueError(f"Unsupported provider: {provider}")
+
+def is_ollama(provider: str) -> bool:
+    return normalize_provider(provider) == "Ollama"
+
+def is_openai(provider: str) -> bool:
+    return normalize_provider(provider) == "OpenAI"
+
+def provider_base_url(provider: str) -> str:
+    if is_openai(provider):
+        return OPENAI_URL
+    elif is_ollama(provider):
+        return OLLAMA_URL
+    else:
+        raise ValueError(f"Unsupported provider: {provider}")
+
+def provider_api_key(provider: str, explicit_key: str | None = None) -> str:
+    if explicit_key:
+        return explicit_key
+    if is_ollama(provider):
+        return os.environ.get("OLLAMA_API_KEY", "ollama")
+    return os.environ.get("OPENAI_API_KEY")
+
+def build_client(provider: str, explicit_key: str | None = None) -> OpenAI:
+    return OpenAI(
+        api_key=provider_api_key(provider, explicit_key),
+        base_url=provider_base_url(provider)
+    )
+
 
 SYSTEM_PROMPT = """
 You are RepositoryAnalyzer, a codebase Q&A assistant.
