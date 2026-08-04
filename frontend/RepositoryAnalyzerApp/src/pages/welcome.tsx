@@ -10,6 +10,7 @@ export default function Welcome() {
     const [embeddingApiKey, setEmbeddingApiKey] = useState("");
     const [chatApiKey, setChatApiKey] = useState("");
     const [error, setError] = useState("");
+    const [isToggled, setIsToggled] = useState(false);
     
     const EMBEDDING_MODEL_CATALOG: Record<string, string[]> = {
         OpenAI: ["text-embedding-3-large", "text-embedding-3-small"],
@@ -70,11 +71,22 @@ export default function Welcome() {
 );
 
 
-
-
+    async function fetchOllamaStatus() {
+        const response = await fetch("http://127.0.0.1:8000/ollama_Status", {
+            method: "GET",
+        });
+        const data = await response.json();
+        console.log(data);
+    }
 
 
     const navigate = useNavigate();
+
+    function handleToggle() {
+        setIsToggled((current) => !current);
+        if(!isToggled)
+            fetchOllamaStatus();
+    }
 
     function isValidGithubUrl(url: string): boolean {
     try {
@@ -132,7 +144,19 @@ export default function Welcome() {
 
 
     return (
-        <section>
+        <section className="welcome-page">
+            <div className="toggle-overlay">
+                <p>Using Ollama?</p>
+                <button
+                    type="button"
+                    className={`toggle-button top-left-toggle ${isToggled ? "toggled" : ""}`}
+                    onClick={handleToggle}
+                    aria-pressed={isToggled}
+                    aria-label="Toggle"
+                >
+                    <span className="thumb" />
+                </button>
+            </div>
             <img src={RALogo} alt="Repository Analyzer Logo" className="logo" />
             
             <h1>Welcome</h1>

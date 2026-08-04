@@ -17,6 +17,7 @@ import logging
 
 import uuid
 
+import httpx
 
 # ** Helper Functions
 
@@ -182,4 +183,18 @@ async def ingest(request: ImportRequest, background_tasks: BackgroundTasks):
     
     return {"message": "Ingestion started", "url": github_url, "job_id": job_id} 
 
-   
+
+
+@router.get("/ollama_Status")
+async def ollama_status():
+    OLLAMA_STATUS_URL = "http://localhost:11434/api/ps"
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(OLLAMA_STATUS_URL)
+            response.raise_for_status()
+            return response.json()
+        except httpx.RequestError as exc:
+            raise HTTPException(status_code=503, detail=f"Could not reach Ollama: {exc}")
+        except httpx.HTTPStatusError as exc:
+            raise HTTPException(status_code=502, detail=f"Ollama returned an error: {exc}")
+

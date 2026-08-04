@@ -2,6 +2,30 @@
   margin: 20px;
 }
 
+.welcome-page {
+  position: relative;
+  min-height: 100vh;
+}
+
+.toggle-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.top-left-toggle {
+  position: absolute;
+  top: 1rem;
+  pointer-events: auto;
+
+}
+
 .welcome-form {
   color: #000;
 }
