@@ -23,6 +23,28 @@ OPENAI_URL = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
 
 OLLAMA_URL = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434/v1")
 
+OLLAMA_CHAT_MODELS = [
+    "llama3.3",
+    "llama3.2",
+    "llama3.1",
+    "mistral",
+    "qwen2.5",
+    "gemma2",
+    "phi3.5",
+    "deepseek-r1",
+    "codellama",
+    "mixtral",
+]
+
+OLLAMA_EMBEDDING_MODELS = [
+    "nomic-embed-text",
+    "mxbai-embed-large",
+    "all-minilm",
+    "bge-m3",
+    "bge-large",
+    "snowflake-arctic-embed",
+]
+
 def normalize_provider(provider: str) -> str:
     if not provider:
         raise ValueError("Provider is required.")

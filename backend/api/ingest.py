@@ -8,7 +8,7 @@ from backend.ingestion.chunker import chunk_repository
 from backend.ingestion.embedder import embed_chunks
 from backend.ingestion.indexer import build_index
 from backend.models.schemas import ImportRequest
-from backend.config.config import OLLAMA_URL, build_client, normalize_provider
+from backend.config.config import OLLAMA_URL, build_client, normalize_provider, OLLAMA_CHAT_MODELS, OLLAMA_EMBEDDING_MODELS
 
 from openai import OpenAI
 import openai
@@ -18,6 +18,7 @@ import logging
 import uuid
 
 import httpx
+
 
 # ** Helper Functions
 
@@ -187,12 +188,22 @@ async def ingest(request: ImportRequest, background_tasks: BackgroundTasks):
 
 @router.get("/ollama_Status")
 async def ollama_status():
-    OLLAMA_STATUS_URL = "http://localhost:11434/api/ps"
+    OLLAMA_STATUS_URL = "http://localhost:11434/api/tags"
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(OLLAMA_STATUS_URL)
             response.raise_for_status()
-            return response.json()
+            chat_models = []
+            embedding_models = []
+            for model in response:
+                if model["name"] in OLLAMA_CHAT_MODELS:
+                    chat_models.append(model)
+                elif model["name"] in OLLAMA_EMBEDDING_MODELS:
+                    embedding_models.append(model)
+            return {
+                "chat_models": chat_models,
+                "embedding_models": embedding_models
+            }
         except httpx.RequestError as exc:
             raise HTTPException(status_code=503, detail=f"Could not reach Ollama: {exc}")
         except httpx.HTTPStatusError as exc:
