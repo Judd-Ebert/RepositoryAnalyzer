@@ -34,6 +34,7 @@ OLLAMA_CHAT_MODELS = [
     "deepseek-r1",
     "codellama",
     "mixtral",
+    "qwen:latest",
 ]
 
 OLLAMA_EMBEDDING_MODELS = [

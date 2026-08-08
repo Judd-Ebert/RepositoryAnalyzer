@@ -192,18 +192,20 @@ async def ollama_status():
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(OLLAMA_STATUS_URL)
-            response.raise_for_status()
+            
             chat_models = []
             embedding_models = []
-            for model in response:
-                if model["name"] in OLLAMA_CHAT_MODELS:
-                    chat_models.append(model)
-                elif model["name"] in OLLAMA_EMBEDDING_MODELS:
-                    embedding_models.append(model)
-            return {
-                "chat_models": chat_models,
-                "embedding_models": embedding_models
-            }
+            if response:
+                print(response.json(), "\n")
+                for model in response.json().get("models", []):
+                    if model["name"] in OLLAMA_CHAT_MODELS:
+                        chat_models.append(model)
+                    elif model["name"] in OLLAMA_EMBEDDING_MODELS:
+                        embedding_models.append(model)
+                return {
+                    "chat_models": chat_models,
+                    "embedding_models": embedding_models
+                }
         except httpx.RequestError as exc:
             raise HTTPException(status_code=503, detail=f"Could not reach Ollama: {exc}")
         except httpx.HTTPStatusError as exc:

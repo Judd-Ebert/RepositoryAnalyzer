@@ -26,14 +26,16 @@ def health():
     return {"status": "ok"}
 
 
-origins = [
-    "http://localhost:1420",
-    "http://127.0.0.1:1420"
+# Restrict browser origins to local machine only.
+allowed_origins = [
+    "tauri://localhost",
+    "http://tauri.localhost",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
