@@ -14,6 +14,9 @@
 - Cleanup UI for landing page
 
 
+!TODO! Need to have better filtration for chat vs. embedding models
+!TODO! Need to allow for a user to use local for one but not the other model
+
 
 Flow for Database:
 App startup

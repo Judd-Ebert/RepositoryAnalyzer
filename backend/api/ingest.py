@@ -1,6 +1,6 @@
-from fastapi import HTTPException, BackgroundTasks
-from fastapi import APIRouter
+from fastapi import HTTPException, BackgroundTasks, APIRouter
 import shutil
+from typing import Optional
 from backend.db.api_key_storage_helpers import create_api_key
 from backend.db.db_helpers import create_job, set_preferences, update_job_status, upsert_repository
 from backend.ingestion.cloner import clone_repo
@@ -22,7 +22,7 @@ import httpx
 
 # ** Helper Functions
 
-def validate_embedding_access(api_key: str, model: str, provider: str,) -> None:
+def validate_embedding_access(api_key: Optional[str], model: str, provider: str,) -> None:
         #Dummy call to check if API key is valid and has access to the model
         provider = normalize_provider(provider)
         if provider not in ("OpenAI", "Ollama"):
@@ -36,7 +36,7 @@ def validate_embedding_access(api_key: str, model: str, provider: str,) -> None:
                 },
             )
         try:
-            client= build_client(provider, api_key)
+            client = build_client(provider, api_key if api_key else None)
             client.embeddings.create(
                 input=["test"],
                 model=model,
@@ -152,7 +152,7 @@ router = APIRouter()
 async def ingest(request: ImportRequest, background_tasks: BackgroundTasks):
     #Validate Keys
     if request.embedding_provider.lower() == "openai" or request.embedding_provider.lower() == "ollama":
-        validate_embedding_access(request.embedding_key, request.embedding_model, request.embedding_provider)
+        validate_embedding_access( request.embedding_key if request.embedding_key else None, request.embedding_model, request.embedding_provider)
 
     """Creates background task to ingest and sends back message"""
     github_url = request.github_url
@@ -164,8 +164,10 @@ async def ingest(request: ImportRequest, background_tasks: BackgroundTasks):
     chat_model_username = f"chat-{request.chat_provider}-{request.chat_model}"
     embedding_model_username = f"embedding-{request.embedding_provider}-{request.embedding_model}"
 
-    create_api_key(embedding_model_username, request.embedding_key)
-    create_api_key(chat_model_username, request.chat_key)
+    if request.embedding_provider.lower() != "ollama":
+        create_api_key(embedding_model_username, request.embedding_key if request.embedding_key else None)
+    if request.chat_provider.lower() != "ollama":
+        create_api_key(chat_model_username, request.chat_key if request.chat_key else None)
     
     set_preferences(
         embedding_provider=request.embedding_provider,
@@ -195,6 +197,7 @@ async def ollama_status():
             
             chat_models = []
             embedding_models = []
+            other_models = []
             if response:
                 print(response.json(), "\n")
                 for model in response.json().get("models", []):
@@ -202,9 +205,12 @@ async def ollama_status():
                         chat_models.append(model)
                     elif model["name"] in OLLAMA_EMBEDDING_MODELS:
                         embedding_models.append(model)
+                    else:
+                        other_models.append(model)
                 return {
                     "chat_models": chat_models,
-                    "embedding_models": embedding_models
+                    "embedding_models": embedding_models,
+                    "other_models": other_models
                 }
         except httpx.RequestError as exc:
             raise HTTPException(status_code=503, detail=f"Could not reach Ollama: {exc}")

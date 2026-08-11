@@ -1,13 +1,7 @@
 import os
 
 from openai import OpenAI
-
-
-# Use local Ollama by default; allow env vars to switch to hosted OpenAI-compatible endpoints.
-client = OpenAI(
-    api_key=os.environ.get("OPENAI_API_KEY", "ollama"),
-    base_url=os.environ.get("OPENAI_BASE_URL", "http://localhost:11434/v1"),
-)
+from typing import Optional\
 
 KEYRING_SERVICE = "RepositoryAnalyzer"
 
@@ -72,14 +66,14 @@ def provider_base_url(provider: str) -> str:
     else:
         raise ValueError(f"Unsupported provider: {provider}")
 
-def provider_api_key(provider: str, explicit_key: str | None = None) -> str:
+def provider_api_key(provider: str, explicit_key: Optional[str] | None = None) -> str:
     if explicit_key:
         return explicit_key
     if is_ollama(provider):
         return os.environ.get("OLLAMA_API_KEY", "ollama")
     return os.environ.get("OPENAI_API_KEY")
 
-def build_client(provider: str, explicit_key: str | None = None) -> OpenAI:
+def build_client(provider: str, explicit_key: Optional[str] | None = None) -> OpenAI:
     return OpenAI(
         api_key=provider_api_key(provider, explicit_key),
         base_url=provider_base_url(provider)

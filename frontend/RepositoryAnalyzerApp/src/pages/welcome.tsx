@@ -12,16 +12,23 @@ export default function Welcome() {
     const [error, setError] = useState("");
     const [isToggled, setIsToggled] = useState(false);
     
+    const [localEmbeddingModelList, setLocalEmbeddingModelList] = useState<string[]>([]);
+
     const EMBEDDING_MODEL_CATALOG: Record<string, string[]> = {
         OpenAI: ["text-embedding-3-large", "text-embedding-3-small"],
         Gemini: ["gemini-embedding-001", "gemini-embedding-2"],
-        Ollama: ["ollama-embedding-001"]
+        Ollama: localEmbeddingModelList,
     }
+
+
+    const [localChatModelList, setLocalChatModelList] = useState<string[]>([]);
+
     const CHAT_MODEL_CATALOG: Record<string, string[]> = {
         OpenAI: ["gpt-4", "gpt-3.5-turbo"],
         Gemini: ["3.1 Pro", "3.6 Flash"],
-        Ollama: ["ollama-4"],
+        Ollama: localChatModelList,
     };
+
 
     const [embeddingProvider, setEmbeddingProvider] = useState("OpenAI");
 
@@ -76,16 +83,28 @@ export default function Welcome() {
             method: "GET",
         });
         const data = await response.json();
-        console.log(data)
+        return data
     }
 
 
     const navigate = useNavigate();
 
-    function handleToggle() {
+    async function handleToggle() {
         setIsToggled((current) => !current);
-        if(!isToggled)
-            fetchOllamaStatus();
+        if(!isToggled){
+            const response = await fetchOllamaStatus();
+            console.log(response);
+            const localChatModelList: string[] = [];
+            const localEmbeddingModelList: string[] = [];
+            for (const model of response?.other_models ?? []) {
+                localChatModelList.push(model.name);
+                localEmbeddingModelList.push(model.name);
+            }
+            setLocalChatModelList(localChatModelList);
+            setLocalEmbeddingModelList(localEmbeddingModelList);
+            setChatProvider("Ollama");
+            setEmbeddingProvider("Ollama");
+        }
     }
 
     function isValidGithubUrl(url: string): boolean {

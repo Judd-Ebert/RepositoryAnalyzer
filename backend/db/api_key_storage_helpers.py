@@ -13,10 +13,10 @@ from .db_helpers import get_connection
 
 #!** API Key Management **!
 
-def create_api_key(username: str, api_key: str) -> None:
+def create_api_key(username: str, api_key: Optional[str]) -> None:
     keyring.set_password(KEYRING_SERVICE, username, api_key)
 
-def get_api_key(username: str,) -> Optional[str]:
+def get_api_key(username: str) -> Optional[str]:
     return keyring.get_password(KEYRING_SERVICE, username)
 
 def delete_api_key(username: str) -> None:
