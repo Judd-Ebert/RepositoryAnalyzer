@@ -7,9 +7,8 @@
 - Further steps: create UI for frontend ingestion, give it functionality to request status updates every 1-2 second
 
 - Support local ai models as far as frontend entering goes, should be fine honestly on teh backend as long as it's openai formatted
-    - Need to probably query for Ollama in the backend
-        - Will have a toggle for "Using Ollama?" and when that's switched on it can look for models in the backend
-        - Toggle will make a call to FastAPI, which will call Ollama, which will then report back to FastAPI and back to the frontend
+    - Need to re design the import page for when someone is using ollama
+        
         
 - Cleanup UI for landing page
 

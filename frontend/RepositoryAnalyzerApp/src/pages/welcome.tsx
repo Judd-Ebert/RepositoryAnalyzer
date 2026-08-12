@@ -30,9 +30,9 @@ export default function Welcome() {
     };
 
 
-    const [embeddingProvider, setEmbeddingProvider] = useState("OpenAI");
+    const [embeddingProvider, setEmbeddingProvider] = useState("Ollama");
 
-    const [chatProvider, setChatProvider] = useState("OpenAI");
+    const [chatProvider, setChatProvider] = useState("Ollama");
     
     const [embeddingModel, setEmbeddingModel] = useState("text-embedding-3-large");
 
@@ -47,12 +47,16 @@ export default function Welcome() {
         value: string;
     }
 
-    const embeddingProviderOptions: Option[] = Object.keys(EMBEDDING_MODEL_CATALOG).map((provider) => ({
+    const embeddingProviderOptions: Option[] = Object.keys(EMBEDDING_MODEL_CATALOG)
+    .filter((provider) => isToggled ? provider === "Ollama" : provider !== "Ollama")
+    .map((provider) => ({
         label: provider,
         value: provider
     }));
 
-    const chatProviderOptions: Option[] = Object.keys(CHAT_MODEL_CATALOG).map((provider) => ({
+    const chatProviderOptions: Option[] = Object.keys(CHAT_MODEL_CATALOG)
+    .filter((provider) => isToggled ? provider === "Ollama" : provider !== "Ollama")
+    .map((provider) => ({
         label: provider,
         value: provider
     }));
@@ -91,7 +95,11 @@ export default function Welcome() {
 
     async function handleToggle() {
         setIsToggled((current) => !current);
-        if(!isToggled){
+        if(isToggled){
+            setChatProvider("OpenAI");
+            setEmbeddingProvider("OpenAI");
+        }
+        else {
             const response = await fetchOllamaStatus();
             console.log(response);
             const localChatModelList: string[] = [];
@@ -129,13 +137,15 @@ export default function Welcome() {
         }
         setError("");
 
-        if (!embeddingApiKey) {
-            setError("Please enter your embedding API key.");
-            return;
-        }
-        if (!chatApiKey) {
-            setError("Please enter your chat API key.");
-            return;
+        if (isToggled) {
+            if (!embeddingApiKey) {
+                setError("Please enter your embedding API key.");
+                return;
+            }
+            if (!chatApiKey) {
+                setError("Please enter your chat API key.");
+                return;
+            }
         }
 
         const response = await fetch("http://127.0.0.1:8000/ingest", {
@@ -168,9 +178,9 @@ export default function Welcome() {
                 <p>Using Ollama?</p>
                 <button
                     type="button"
-                    className={`toggle-button top-left-toggle ${isToggled ? "toggled" : ""}`}
+                    className={`toggle-button top-left-toggle ${!isToggled ? "toggled" : ""}`}
                     onClick={handleToggle}
-                    aria-pressed={isToggled}
+                    aria-pressed={!isToggled}
                     aria-label="Toggle"
                 >
                     <span className="thumb" />
@@ -204,15 +214,17 @@ export default function Welcome() {
                         />
                     </div>
 
-                    <form className="welcome-form" onSubmit={handleSubmit}>
-                        <input type="text"
-                        placeholder="Enter your API key"
-                        className="input-field"
-                        size={40}
-                        value={embeddingApiKey}
-                        onChange={(e) => setEmbeddingApiKey(e.currentTarget.value)}
-                        />
-                    </form>
+                    {!isToggled && (
+                        <form className="welcome-form" onSubmit={handleSubmit}>
+                            <input type="text"
+                            placeholder="Enter your API key"
+                            className="input-field"
+                            size={40}
+                            value={embeddingApiKey}
+                            onChange={(e) => setEmbeddingApiKey(e.currentTarget.value)}
+                            />
+                        </form>
+                    )}
 
                 </div>
                 <div
@@ -236,15 +248,17 @@ export default function Welcome() {
                         />
 
                     </div>
-                    <form className="welcome-form" onSubmit={handleSubmit}>
-                        <input type="text"
-                        placeholder="Enter your API key"
-                        className="input-field"
-                        size={40}
-                        value={chatApiKey}
-                        onChange={(e) => setChatApiKey(e.currentTarget.value)}
-                        />
-                    </form>
+                    {!isToggled && (
+                        <form className="welcome-form" onSubmit={handleSubmit}>
+                            <input type="text"
+                            placeholder="Enter your API key"
+                            className="input-field"
+                            size={40}
+                            value={chatApiKey}
+                            onChange={(e) => setChatApiKey(e.currentTarget.value)}
+                            />
+                        </form>
+                    )}
                 </div>
             </div>
             <form className="welcome-form" onSubmit={handleSubmit}>

@@ -1,7 +1,7 @@
 import faiss
 import json
 import numpy as np
-from backend.config.config import build_client, client, FLOATS_PER_CHUNK, STORAGE_DIR
+from backend.config.config import build_client, FLOATS_PER_CHUNK, STORAGE_DIR
 from backend.db.db_helpers import get_preferences
 from backend.db.api_key_storage_helpers import get_api_key
 
