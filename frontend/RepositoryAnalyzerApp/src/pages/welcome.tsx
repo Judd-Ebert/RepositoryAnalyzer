@@ -48,14 +48,14 @@ export default function Welcome() {
     }
 
     const embeddingProviderOptions: Option[] = Object.keys(EMBEDDING_MODEL_CATALOG)
-    .filter((provider) => isToggled ? provider === "Ollama" : provider !== "Ollama")
+    .filter((provider) => !isToggled ? provider === "Ollama" : provider !== "Ollama")
     .map((provider) => ({
         label: provider,
         value: provider
     }));
 
     const chatProviderOptions: Option[] = Object.keys(CHAT_MODEL_CATALOG)
-    .filter((provider) => isToggled ? provider === "Ollama" : provider !== "Ollama")
+    .filter((provider) => !isToggled ? provider === "Ollama" : provider !== "Ollama")
     .map((provider) => ({
         label: provider,
         value: provider
@@ -95,7 +95,7 @@ export default function Welcome() {
 
     async function handleToggle() {
         setIsToggled((current) => !current);
-        if(isToggled){
+        if(!isToggled){
             setChatProvider("OpenAI");
             setEmbeddingProvider("OpenAI");
         }
@@ -214,7 +214,7 @@ export default function Welcome() {
                         />
                     </div>
 
-                    {!isToggled && (
+                    {isToggled && (
                         <form className="welcome-form" onSubmit={handleSubmit}>
                             <input type="text"
                             placeholder="Enter your API key"
@@ -248,7 +248,7 @@ export default function Welcome() {
                         />
 
                     </div>
-                    {!isToggled && (
+                    {isToggled && (
                         <form className="welcome-form" onSubmit={handleSubmit}>
                             <input type="text"
                             placeholder="Enter your API key"
