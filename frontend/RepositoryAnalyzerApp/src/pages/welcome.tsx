@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import RALogo from "../assets/RALogo.png";
 import { useNavigate } from "react-router-dom";
 import Dropdown from "../components/Dropdown/dropdown";
+import { JobId } from "../config/types";
 
 
 export default function Welcome() {
@@ -170,7 +171,12 @@ export default function Welcome() {
         else {
             console.log("Ingestion started successfully");
             const data = await response.json();
-            navigate("/loading",{state: { repoUrl, job: data}})
+            const dataToPass: JobId = {
+                github_url: data.github_url.trim(),
+                job_id: data.job_id
+            }
+            console.log("Job ID:", dataToPass);
+            navigate("/loading",{state: {job: data}})
         }
 
         

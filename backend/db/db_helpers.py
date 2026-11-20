@@ -183,7 +183,7 @@ def update_job_status(job_id: str, stage: str, status: str, error_code: Optional
     finally:
         connection.close()
 
-def get_job_status(job_id: str) -> Optional[sqlite3.Row]:
+def get_job_status_from_db(job_id: str) -> Optional[sqlite3.Row]:
     connection = get_connection()
     cursor = connection.cursor()
 

@@ -4,7 +4,8 @@ from backend.db.db_helpers import init_db
 from contextlib import asynccontextmanager
 
 from backend.api.ingest import router as ingest_router
-from  backend.api.query import router as query_router
+from backend.api.query import router as query_router
+from backend.api.jobs_helper import router as jobs_router
 
 
 @asynccontextmanager
@@ -20,6 +21,7 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(ingest_router)
 app.include_router(query_router)
+app.include_router(jobs_router)
 
 @app.get("/health")
 def health():

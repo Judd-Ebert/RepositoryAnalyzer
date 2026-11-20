@@ -122,6 +122,7 @@ def process_repo_task(github_url: str, job_id: str, request: ImportRequest):
         if not chunks:
             update_job_status(job_id, status="running", stage="failed", error_message="No text chunks were created from the repository.")
             logging.error("Text chunks not found")
+            return
         
         #Status = Embedding
         update_job_status(job_id, status="running", stage="embedding")
@@ -134,6 +135,7 @@ def process_repo_task(github_url: str, job_id: str, request: ImportRequest):
     except Exception as e:
         logging.error(f"Failed to ingest {github_url}: {e}")
         update_job_status(job_id, status="failed", stage="failed", error_message=str(e))  # Update job status on failure
+        return
     finally:
         if local_path:
             shutil.rmtree(local_path, ignore_errors=True) #Deletes copied files
