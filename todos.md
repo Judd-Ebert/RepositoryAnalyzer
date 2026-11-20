@@ -6,12 +6,8 @@
 - Validate the chat api key
 - Further steps: create UI for frontend ingestion, give it functionality to request status updates every 1-2 second
 
-- Support local ai models as far as frontend entering goes, should be fine honestly on teh backend as long as it's openai formatted
-    - Need to re design the import page for when someone is using ollama
+- Support local ai models as far as frontend entering goes, should be fine honestly on the backend as long as it's openai formatted
         
-        
-- Cleanup UI for landing page
-
 
 !TODO! Need to have better filtration for chat vs. embedding models
 !TODO! Need to allow for a user to use local for one but not the other model

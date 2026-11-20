@@ -153,7 +153,14 @@ export default function Welcome() {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ github_url: repoUrl.trim() }),
+            body: JSON.stringify({ github_url: repoUrl.trim(), 
+                embedding_provider: embeddingProvider,
+                embedding_model: embeddingModel,
+                embedding_key: isToggled ? embeddingApiKey : undefined,
+                chat_provider: chatProvider,
+                chat_model: chatModel,
+                chat_key: isToggled ? chatApiKey : undefined,
+            }),
         });
 
         if (!response.ok) {
